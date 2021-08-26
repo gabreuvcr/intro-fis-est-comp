@@ -1,3 +1,4 @@
+from matplotlib import colors
 import numpy as np
 import matplotlib.pyplot as plt
 from random import randint, uniform
@@ -7,6 +8,7 @@ L = 100
 N = L * L
 ITER = 100
 PLOTS = 5
+SIMS = 10
 
 INFECTADO = -1
 SUSCETIVEL = 0
@@ -85,8 +87,9 @@ def simular(N, L, p_config, iter = ITER, plots = PLOTS):
         pessoas, v = atualizar_estado(vizinhos, pessoas, p_infec, p_rec)
         dados.append((v[0], v[1], v[2]))
         count += 1
-        if count % plot_step == 0:
-            distribuicao_espacial(pessoas, L)
+        # if count % plot_step == 0:
+        #     distribuicao_espacial(pessoas, L)
+    # distribuicao_espacial(pessoas, L)
     return dados
 
 
@@ -118,12 +121,29 @@ def distribuicao_espacial(pessoas, L):
     ax.tick_params(axis='y', colors='white')
     plt.show()
 
-def plot_media(p_config, sim_count = 5):
+def plot_media(p_config, sim_count = SIMS):
     dados = []
     for i in range(sim_count):
         dados.append(simular(N, L, p_config))
     
     avg_infec, avg_sus, avg_rec = [], [], []
-    # for i in range(sim_count)
 
-print(simular(N, L, 2))
+    for t in range(len(dados[0])):
+        infec, sus, rec = 0,0,0
+        for sim in range(sim_count):
+            infec += dados[sim][t][0]
+            sus += dados[sim][t][1]
+            rec += dados[sim][t][2]
+        avg_infec.append(infec/sim_count)
+        avg_sus.append(sus/sim_count)
+        avg_rec.append(rec/sim_count)
+    
+    # return avg_infec, avg_sus, avg_rec
+    plt.plot(avg_infec, color='r', label='Infectados')
+    plt.plot(avg_sus, color='purple', label="Suscetíveis")
+    plt.plot(avg_rec, color='g', label="Recuperados")
+    plt.legend()
+    plt.show()
+
+# print(simular(N, L, 2))
+plot_media(0)
